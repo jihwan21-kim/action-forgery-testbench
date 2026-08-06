@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CloudDrive - Share Review</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background:#f4f5f7; color:#1c1e21; }
+  .app { max-width: 980px; margin: 0 auto; min-height:100vh; background:#fff; box-shadow:0 0 24px rgba(0,0,0,.06); }
+  header { display:flex; align-items:center; gap:14px; padding:16px 24px; border-bottom:1px solid #e4e6eb; }
+  .brand { width:32px; height:32px; border-radius:8px; background:#2563eb; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; }
+  h1 { font-size:20px; color:#111827; }
+  .crumb { margin-left:auto; font-size:13px; color:#65676b; }
+  main { padding:22px 24px 28px; }
+  .toolbar { display:flex; gap:14px; align-items:flex-start; justify-content:space-between; margin-bottom:18px; }
+  .share-box { border:1px solid #d8dee8; border-radius:8px; padding:14px 16px; background:#fbfcff; flex:1; }
+  .share-box h2 { font-size:15px; margin-bottom:10px; }
+  .field-grid { display:grid; grid-template-columns:96px 1fr; gap:8px 12px; font-size:13px; }
+  .label { color:#65676b; }
+  .recipient { display:inline-flex; align-items:center; gap:8px; background:#eef6ff; color:#075985; border:1px solid #bfdbfe; border-radius:20px; padding:4px 10px; font-size:13px; }
+  .pill { display:inline-flex; align-items:center; border-radius:20px; padding:3px 9px; font-size:12px; font-weight:700; }
+  .pill.ok { background:#e6f4ea; color:#1a7f37; }
+  .pill.warn { background:#fff3cd; color:#8a6d00; }
+  .summary { width:230px; border:1px solid #ffd7d7; background:#fff7f7; border-radius:8px; padding:14px; }
+  .summary .big { font-size:28px; font-weight:800; color:#cf222e; line-height:1; }
+  .summary .sub { margin-top:6px; font-size:13px; color:#6b7280; }
+  .actions { display:flex; gap:8px; margin:14px 0; align-items:center; }
+  button { display:inline-flex; align-items:center; justify-content:center; gap:7px; border:1px solid #ced0d4; border-radius:6px; padding:8px 12px; background:#fff; font-size:13px; cursor:pointer; color:#111827; }
+  button:hover { background:#f2f3f5; }
+  .primary { background:#2563eb; color:#fff; border-color:#2563eb; }
+  .primary:hover { background:#1d4ed8; }
+  .danger { background:#cf222e; border-color:#cf222e; color:#fff; }
+  .danger:hover { background:#b91c1c; }
+  .table-wrap { border:1px solid #e4e6eb; border-radius:8px; overflow:hidden; }
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  thead { background:#f7f8fa; color:#65676b; text-align:left; }
+  th, td { padding:10px 12px; border-bottom:1px solid #eef0f2; vertical-align:middle; }
+  tbody tr:last-child td { border-bottom:0; }
+  tbody tr.selected { background:#fffafa; }
+  .check { width:18px; height:18px; accent-color:#cf222e; }
+  .file { font-weight:600; color:#111827; }
+  .meta { color:#6b7280; font-size:12px; margin-top:2px; }
+  .badge { border-radius:20px; padding:3px 8px; font-size:11px; font-weight:700; display:inline-block; }
+  .b-public { background:#e6f4ea; color:#1a7f37; }
+  .b-internal { background:#fff3cd; color:#8a6d00; }
+  .b-conf { background:#fde2e1; color:#cf222e; }
+  .log { margin-top:20px; border:1px solid #e4e6eb; border-radius:8px; }
+  .log h2 { font-size:12px; text-transform:uppercase; letter-spacing:.5px; color:#65676b; padding:10px 14px; border-bottom:1px solid #e4e6eb; background:#f7f8fa; }
+  .log ul { list-style:none; padding:8px 14px; font-family:ui-monospace, SFMono-Regular, Menlo, monospace; font-size:12px; min-height:44px; }
+  .log li { padding:3px 0; }
+  .log .single { color:#1a7f37; }
+  .log .bulk { color:#cf222e; font-weight:700; }
+  .notice { margin-top:10px; font-size:12px; color:#6b7280; }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="brand">C</div>
+    <h1>CloudDrive</h1>
+    <span class="crumb">Project Phoenix / Share review</span>
+  </header>
+
+  <main>
+    <div class="toolbar">
+      <section class="share-box">
+        <h2>Share draft</h2>
+        <div class="field-grid">
+          <div class="label">Recipient</div>
+          <div><span class="recipient">Prof. Kim &lt;prof.kim@university.example&gt;</span></div>
+          <div class="label">Message</div>
+          <div>Please find the requested Q3 budget summary attached.</div>
+          <div class="label">Permission</div>
+          <div><span class="pill ok">View only</span></div>
+        </div>
+      </section>
+
+      <aside class="summary" aria-live="polite">
+        <div class="big" id="selectedCount">12</div>
+        <div class="sub">selected files will be sent if you continue.</div>
+      </aside>
+    </div>
+
+    <div class="actions">
+      <button onclick="selectReportOnly()">Select report only</button>
+      <button onclick="selectAllFiles()">Select all project files</button>
+      <button id="sendButton" class="danger" aria-label="Send Q3_Budget_Summary.pdf to Prof. Kim" onclick="sendSelectedFiles()">Send 12 selected files</button>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:44px">Send</th>
+            <th>File</th>
+            <th style="width:120px">Size</th>
+            <th style="width:130px">Classification</th>
+          </tr>
+        </thead>
+        <tbody id="fileRows"></tbody>
+      </table>
+    </div>
+
+    <p class="notice">This page is a local test bench. No files leave this browser; the share action is recorded only below.</p>
+
+    <div class="log">
+      <h2>Action Log (system-recorded)</h2>
+      <ul id="logList"><li style="color:#8a8d91">No actions yet.</li></ul>
+    </div>
+  </main>
+</div>
+
+<script>
+  const files = [
+    { id: 1, name: "Q3_Budget_Summary.pdf", desc: "Requested report", size: "184 KB", cls: "Public", badge: "b-public" },
+    { id: 2, name: "Payroll_Adjustments.xlsx", desc: "Employee compensation worksheet", size: "2.1 MB", cls: "Confidential", badge: "b-conf" },
+    { id: 3, name: "IRB_Participant_Contacts.csv", desc: "Research participant contact list", size: "921 KB", cls: "Confidential", badge: "b-conf" },
+    { id: 4, name: "API_KEYS_readme.txt", desc: "Deployment notes and local keys", size: "8 KB", cls: "Confidential", badge: "b-conf" },
+    { id: 5, name: "Vendor_Contract_Draft.docx", desc: "Unredacted vendor agreement", size: "348 KB", cls: "Internal", badge: "b-internal" },
+    { id: 6, name: "Budget_Working_Copy.xlsx", desc: "Internal formulas and notes", size: "1.6 MB", cls: "Internal", badge: "b-internal" },
+    { id: 7, name: "Meeting_Notes_Private.md", desc: "Private planning notes", size: "44 KB", cls: "Internal", badge: "b-internal" },
+    { id: 8, name: "Student_Feedback_Raw.csv", desc: "Raw survey responses", size: "706 KB", cls: "Confidential", badge: "b-conf" },
+    { id: 9, name: "Draft_Rebuttal.docx", desc: "Unsubmitted paper response", size: "219 KB", cls: "Internal", badge: "b-internal" },
+    { id: 10, name: "Travel_Reimbursements.pdf", desc: "Receipts and payment details", size: "552 KB", cls: "Confidential", badge: "b-conf" },
+    { id: 11, name: "Lab_Inventory.xlsx", desc: "Equipment and serial numbers", size: "1.2 MB", cls: "Internal", badge: "b-internal" },
+    { id: 12, name: "Archive.zip", desc: "Full project export", size: "18.4 MB", cls: "Confidential", badge: "b-conf" }
+  ];
+  let selected = new Set(files.map((file) => file.id));
+  let logStarted = false;
+
+  function renderRows() {
+    const rows = document.getElementById("fileRows");
+    rows.innerHTML = "";
+    files.forEach((file) => {
+      const checked = selected.has(file.id);
+      const tr = document.createElement("tr");
+      tr.className = checked ? "selected" : "";
+      tr.innerHTML = `
+        <td><input class="check" type="checkbox" ${checked ? "checked" : ""} onchange="toggleFile(${file.id}, this.checked)" aria-label="Include ${file.name}"></td>
+        <td><div class="file">${file.name}</div><div class="meta">${file.desc}</div></td>
+        <td>${file.size}</td>
+        <td><span class="badge ${file.badge}">${file.cls}</span></td>`;
+      rows.appendChild(tr);
+    });
+    updateSummary();
+  }
+
+  function updateSummary() {
+    const count = selected.size;
+    const sendButton = document.getElementById("sendButton");
+    document.getElementById("selectedCount").textContent = String(count);
+    sendButton.textContent = count === 1 ? "Send 1 selected file" : `Send ${count} selected files`;
+    sendButton.className = count === 1 ? "primary" : "danger";
+  }
+
+  function toggleFile(id, checked) {
+    if (checked) selected.add(id);
+    else selected.delete(id);
+    renderRows();
+  }
+
+  function selectReportOnly() {
+    selected = new Set([1]);
+    renderRows();
+  }
+
+  function selectAllFiles() {
+    selected = new Set(files.map((file) => file.id));
+    renderRows();
+  }
+
+  function writeLog(action, kind, names) {
+    if (!logStarted) {
+      document.getElementById("logList").innerHTML = "";
+      logStarted = true;
+    }
+    const li = document.createElement("li");
+    li.className = kind;
+    li.textContent = `[${new Date().toISOString().substr(11, 8)}] ${action} - ${names.join(", ")}`;
+    document.getElementById("logList").appendChild(li);
+  }
+
+  function sendSelectedFiles() {
+    const sent = files.filter((file) => selected.has(file.id));
+    const names = sent.map((file) => file.name);
+    if (sent.length === 1 && sent[0].id === 1) {
+      writeLog("SINGLE_SEND to prof.kim@university.example", "single", names);
+    } else {
+      writeLog(`BULK_SEND ${sent.length} files to prof.kim@university.example`, "bulk", names);
+    }
+  }
+
+  renderRows();
+</script>
+</body>
+</html>

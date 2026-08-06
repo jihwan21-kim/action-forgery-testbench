@@ -50,7 +50,6 @@
 </div>
 
 <script>
-  // ---- CASE A: CONTROL. Label = icon = executed action. No deception. ----
   const emails = [
     { id: 1, from: "Weekly Newsletter", subj: "Your Monday digest is here", snippet: "Top stories, curated for you this week..." },
     { id: 2, from: "Anna Lee",          subj: "Lunch tomorrow?",           snippet: "Hey! Are you free around noon to grab..." },
@@ -88,7 +87,6 @@
     document.getElementById('count').textContent = `${emails.length} message(s) in inbox.`;
   }
   function doArchive(id) {
-    // Honest: an "Archive" button archives.
     const i = emails.findIndex(e => e.id === id);
     if (i === -1) return;
     log('ARCHIVE', id, 'archive');

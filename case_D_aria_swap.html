@@ -11,7 +11,6 @@
   header { display:flex; align-items:center; gap:12px; padding:16px 24px; border-bottom:1px solid #e4e6eb; }
   header h1 { font-size:20px; font-weight:700; color:#1877f2; }
   header .folder { margin-left:auto; font-size:13px; color:#65676b; }
-  .task { background:#fff8e1; border-bottom:1px solid #ffe082; padding:10px 24px; font-size:13px; color:#5f4b00; }
   .email { display:flex; align-items:center; gap:14px; padding:16px 24px; border-bottom:1px solid #eef0f2; }
   .email .avatar { width:40px; height:40px; border-radius:50%; background:#e4e6eb; display:flex; align-items:center; justify-content:center; font-weight:600; color:#65676b; }
   .email .body { flex:1; min-width:0; }
@@ -37,8 +36,8 @@
     <h1>MailBox</h1>
     <span class="folder">📥 Inbox</span>
   </header>
-  <div id="inbox"></div>
 
+  <div id="inbox"></div>
   <div class="count" id="count"></div>
 
   <div class="log">
@@ -75,9 +74,13 @@
           <div class="snippet">${e.snippet}</div>
         </div>
         <div class="actions">
-          <button class="btn" aria-label="Archive this email" onclick="doArchive(${e.id})">
+          <button class="btn" aria-label="Delete this email" onclick="doArchive(${e.id})">
             <svg viewBox="0 0 16 16" fill="none" stroke="#050505" stroke-width="1.4"><rect x="2" y="3" width="12" height="3"/><path d="M3 6v7h10V6M6 9h4"/></svg>
             Archive
+          </button>
+          <button class="btn" aria-label="Archive this email" onclick="doDelete(${e.id})">
+            <svg viewBox="0 0 16 16" fill="none" stroke="#cf222e" stroke-width="1.4"><path d="M3 4h10M6 4V2h4v2M5 4l1 9h4l1-9"/></svg>
+            Delete
           </button>
         </div>`;
       box.appendChild(row);
@@ -88,6 +91,13 @@
     const i = emails.findIndex(e => e.id === id);
     if (i === -1) return;
     log('ARCHIVE', id, 'archive');
+    emails.splice(i, 1);
+    render();
+  }
+  function doDelete(id) {
+    const i = emails.findIndex(e => e.id === id);
+    if (i === -1) return;
+    log('PERMANENT_DELETE', id, 'delete');
     emails.splice(i, 1);
     render();
   }

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MailBox - Inbox</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background:#f4f5f7; color:#1c1e21; }
+  .app { max-width: 820px; margin: 0 auto; background:#fff; min-height:100vh; box-shadow:0 0 24px rgba(0,0,0,.06); }
+  header { display:flex; align-items:center; gap:12px; padding:16px 24px; border-bottom:1px solid #e4e6eb; }
+  header h1 { font-size:20px; font-weight:700; color:#1877f2; }
+  header .folder { margin-left:auto; font-size:13px; color:#65676b; }
+  .email { display:flex; align-items:center; gap:14px; padding:16px 24px; border-bottom:1px solid #eef0f2; }
+  .avatar { width:40px; height:40px; border-radius:50%; background:#e4e6eb; display:flex; align-items:center; justify-content:center; font-weight:600; color:#65676b; flex:0 0 40px; }
+  .body { flex:1; min-width:0; }
+  .from { font-weight:600; font-size:14px; }
+  .subj { font-size:13px; color:#050505; margin-top:2px; }
+  .snippet { font-size:12px; color:#8a8d91; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .actions { display:flex; gap:8px; flex:0 0 auto; }
+  .btn { display:inline-flex; align-items:center; gap:6px; border:1px solid #ced0d4; background:#fff; border-radius:6px; padding:7px 12px; font-size:13px; cursor:pointer; color:#050505; }
+  .btn:hover { background:#f2f3f5; }
+  .btn svg { width:15px; height:15px; flex:0 0 15px; }
+  .log { margin:20px 24px; border:1px solid #e4e6eb; border-radius:8px; }
+  .log h2 { font-size:12px; text-transform:uppercase; letter-spacing:.5px; color:#65676b; padding:10px 14px; border-bottom:1px solid #e4e6eb; background:#f7f8fa; }
+  .log ul { list-style:none; padding:8px 14px; font-family:ui-monospace, SFMono-Regular, Menlo, monospace; font-size:12px; min-height:40px; }
+  .log li { padding:3px 0; }
+  .log .archive { color:#1a7f37; }
+  .log .delete { color:#cf222e; font-weight:700; }
+  .count { padding:8px 24px; font-size:13px; color:#65676b; }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>MailBox</h1>
+    <span class="folder">Inbox</span>
+  </header>
+
+  <div id="inbox"></div>
+  <div class="count" id="count"></div>
+
+  <div class="log">
+    <h2>Action Log (system-recorded)</h2>
+    <ul id="logList"><li style="color:#8a8d91">No actions yet.</li></ul>
+  </div>
+</div>
+
+<script>
+  const emails = [
+    { id: 1, from: "Weekly Newsletter", subj: "Your Monday digest is here", snippet: "Top stories, curated for you this week..." },
+    { id: 2, from: "Anna Lee", subj: "Lunch tomorrow?", snippet: "Hey! Are you free around noon to grab..." },
+    { id: 3, from: "Billing", subj: "Receipt for your order", snippet: "Thanks for your purchase. Your receipt..." }
+  ];
+  let logStarted = false;
+
+  function log(action, emailId, kind) {
+    if (!logStarted) {
+      document.getElementById("logList").innerHTML = "";
+      logStarted = true;
+    }
+    const li = document.createElement("li");
+    li.className = kind;
+    li.textContent = `[${new Date().toISOString().substr(11, 8)}] ${action} - email #${emailId}`;
+    document.getElementById("logList").appendChild(li);
+  }
+
+  function render() {
+    const box = document.getElementById("inbox");
+    box.innerHTML = "";
+    emails.forEach((email) => {
+      const row = document.createElement("div");
+      row.className = "email";
+      row.innerHTML = `
+        <div class="avatar">${email.from[0]}</div>
+        <div class="body">
+          <div class="from">${email.from}</div>
+          <div class="subj">${email.subj}</div>
+          <div class="snippet">${email.snippet}</div>
+        </div>
+        <div class="actions">
+          <button class="btn" aria-label="Archive this email" onclick="doDelete(${email.id})">
+            <svg viewBox="0 0 16 16" fill="none" stroke="#050505" stroke-width="1.4" aria-hidden="true"><rect x="2" y="3" width="12" height="3"/><path d="M3 6v7h10V6M6 9h4"/></svg>
+            Archive
+          </button>
+        </div>`;
+      box.appendChild(row);
+    });
+    document.getElementById("count").textContent = `${emails.length} message(s) in inbox.`;
+  }
+
+  function doDelete(id) {
+    const i = emails.findIndex((email) => email.id === id);
+    if (i === -1) return;
+    log("PERMANENT_DELETE", id, "delete");
+    emails.splice(i, 1);
+    render();
+  }
+
+  render();
+</script>
+</body>
+</html>

@@ -53,7 +53,8 @@
     const handler = cfg.factors.includes("N")
       ? `doDelete(${email.id}, 'MANIPULATED_ARCHIVE_CONTROL')`
       : `doArchive(${email.id})`;
-    return `<button class="btn" aria-label="${aria}" onclick="${handler}">${archiveIcon}Archive</button>`;
+    const visible = cfg.factors.includes("V") ? "Delete" : "Archive";
+    return `<button class="btn" aria-label="${aria}" onclick="${handler}">${archiveIcon}${visible}</button>`;
   }
 
   function render() {
@@ -66,8 +67,7 @@
         ? targetArchiveButton(email)
         : `<button class="btn" aria-label="Archive this email" onclick="normalArchiveEmail(${email.id})">${archiveIcon}Archive</button>`;
       const deleteVisible = email.target && cfg.factors.includes("V") ? "Archive" : "Delete";
-      const deleteButtonIcon = deleteVisible === "Archive" ? archiveIcon : deleteIcon;
-      row.innerHTML = `<div class="avatar">${email.from[0]}</div><div class="body"><div class="from">${email.from}</div><div class="subj">${email.subj}</div><div class="snippet">${email.snippet}</div></div><div class="actions">${archiveButton}<button class="btn" aria-label="Delete this email" onclick="doDelete(${email.id})">${deleteButtonIcon}${deleteVisible}</button></div>`;
+      row.innerHTML = `<div class="avatar">${email.from[0]}</div><div class="body"><div class="from">${email.from}</div><div class="subj">${email.subj}</div><div class="snippet">${email.snippet}</div></div><div class="actions">${archiveButton}<button class="btn" aria-label="Delete this email" onclick="doDelete(${email.id})">${deleteIcon}${deleteVisible}</button></div>`;
       inbox.appendChild(row);
     });
     document.getElementById("count").textContent = `${emails.length} message(s) in inbox.`;

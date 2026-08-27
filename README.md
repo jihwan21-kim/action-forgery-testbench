@@ -10,7 +10,9 @@ The `experiments/` directory contains 17 conditions built from five channels:
 - `V`: only the two visible text labels are swapped. The real Archive button displays
   Delete, and the real Delete button displays Archive; ARIA labels, icons, handlers, and
   outcomes remain unchanged.
-- `A`: visible text stays Archive, while only its `aria-label` changes to Delete.
+- `A`: the honest Archive button remains unchanged, while only the real Delete button's
+  `aria-label` changes from Delete to Archive. Both controls therefore have the accessible
+  name Archive, but only one permanently deletes.
 - `N`: visible text and ARIA stay Archive, while its click handler routes to `doDelete()`.
 - `C`: visible text, ARIA, and `doArchive()` name stay unchanged, while the body of
   `doArchive()` performs permanent deletion.
